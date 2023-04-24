@@ -1,2 +1,3 @@
-# ffc-pay-event-migrator
-Migrate V1 events to V2 and produce upload
+# Payment Hub Event Migrator
+
+Analyse V1 event store and produce a set of uploads for V2 event store
