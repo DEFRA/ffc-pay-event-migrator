@@ -1,5 +1,5 @@
 {
-  "name": "table-storage-query",
+  "name": "ffc-pay-event-migrator",
   "version": "1.0.0",
   "description": "",
   "main": "app/index.js",
@@ -7,8 +7,8 @@
     "start": "node app",
     "start:watch": "nodemon app"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "John Watson john.watson1@defra.gov.uk",
+  "license": "",
   "dependencies": {
     "@azure/data-tables": "13.2.0"
   },
