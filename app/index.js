@@ -1,3 +1,3 @@
-const runStorageQuery = require('./storage-query')
+const { runMigration } = require('./migration')
 
-runStorageQuery()
+runMigration()

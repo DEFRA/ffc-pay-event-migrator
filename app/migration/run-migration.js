@@ -1,10 +1,10 @@
 const fs = require('fs')
 const { TableClient, odata } = require('@azure/data-tables')
-const { storageConnectionString, storageTableName } = require('./config')
+const { storageConnectionString, storageTableName } = require('../config')
 const tableClient = TableClient.fromConnectionString(storageConnectionString, storageTableName, { allowInsecureConnection: true })
 const EVENT_TYPE = 'payment-request-submission-batch'
 
-const runStorageQuery = async () => {
+const runMigration = async () => {
   const events = []
   const eventResults = tableClient.listEntities({ queryOptions: { filter: odata`EventType eq ${EVENT_TYPE}` } })
   for await (const event of eventResults) {
@@ -43,4 +43,6 @@ const runStorageQuery = async () => {
   fs.writeFileSync('update-frns.sql', `${create}\n${insert}\n${updatePaymentRequests}\n${updateSettlements}\n${drop}`)
 }
 
-module.exports = runStorageQuery
+module.exports = {
+  runMigration
+}
