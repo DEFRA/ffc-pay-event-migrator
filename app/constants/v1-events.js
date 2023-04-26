@@ -1,0 +1,21 @@
+module.exports = {
+  PROCESSING_ERROR_V1: 'payment-request-processing-error',
+  PAYMENT_ENRICHMENT_V1: 'payment-request-enrichment',
+  PAYMENT_PROCESSED_V1: 'payment-request-processing',
+  PAYMENT_SUBMITTED_BATCH_V1: 'payment-request-submission-batch',
+  PAYMENT_SUBMITTED_V1: 'payment-request-submission',
+  BATCH_PROCESSED_V1: 'batch-processing',
+  PAYMENT_SETTLED_V1: 'payment-request-return',
+  PAYMENT_ACKNOWLEDGED_V1: 'payment-request-acknowledged',
+  PAYMENT_REJECTED_V1: 'payment-request-enrichment-error',
+  PAYMENT_INVALID_BANK_DETAILS_V1: 'invalid-bank-details',
+  PAYMENT_PAUSED_DEBT_ENRICHMENT_V1: 'payment-request-debt-request',
+  PAYMENT_BLOCKED_V1: 'payment-request-blocked',
+  PAYMENT__ENRICHED_V1: 'payment-request-enriched',
+  PAYMENT_DEBT_ENRICHED_V1: 'payment-request-debt-response',
+  PAYMENT_PAUSED_LEDGER_V1: 'payment-request-manual-ledger-request',
+  PAYMENT_LEDGER_QUALITY_CHECK_REVIEWED_V1: 'payment-request-ledger-assignment-reviewed',
+  PAYMENT_LEDGER_QUALITY_CHECKED_V1: 'payment-request-ledger-assignment-quality-checked',
+  PAYMENT_LEDGER_QUALITY_CHECK_PASSED_V1: 'payment-request-manual-ledger-response',
+  BATCH_ERROR_V1: 'batch-processing-quarantine-error'
+}

@@ -1,46 +1,19 @@
-const fs = require('fs')
 const { TableClient, odata } = require('@azure/data-tables')
-const { storageConnectionString, storageTableName } = require('../config')
-const tableClient = TableClient.fromConnectionString(storageConnectionString, storageTableName, { allowInsecureConnection: true })
-const EVENT_TYPE = 'payment-request-submission-batch'
+const { storageConnectionString, v1Table, paymentTable, batchTable, holdTable, warningTable } = require('../config')
+const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
+const paymentClient = TableClient.fromConnectionString(storageConnectionString, paymentTable, { allowInsecureConnection: true })
+const batchClient = TableClient.fromConnectionString(storageConnectionString, batchTable, { allowInsecureConnection: true })
+const holdClient = TableClient.fromConnectionString(storageConnectionString, holdTable, { allowInsecureConnection: true })
+const warningClient = TableClient.fromConnectionString(storageConnectionString, warningTable, { allowInsecureConnection: true })
 
 const runMigration = async () => {
   const events = []
-  const eventResults = tableClient.listEntities({ queryOptions: { filter: odata`EventType eq ${EVENT_TYPE}` } })
+  const eventResults = v1Client.listEntities()
   for await (const event of eventResults) {
-    events.push(event)
+    events.push(event.EventType)
   }
 
-  const frns = []
-
-  for (const event of events) {
-    const payload = JSON.parse(event.Payload)
-    frns.push(`(${payload.data.paymentRequest.frn}, '${payload.data.paymentRequest.invoiceNumber}')`)
-  }
-
-  const create = `CREATE TABLE "tempFrns"
-    (
-      "frn" BIGINT,
-      "invoiceNumber" VARCHAR
-    );`
-
-  const insert = `INSERT INTO "tempFrns" (frn, "invoiceNumber") \n VALUES ${frns.join(',\n')};`
-
-  const updatePaymentRequests = `UPDATE "paymentRequests" 
-    SET frn = "tempFrns".frn 
-    FROM "tempFrns" 
-    WHERE "paymentRequests"."invoiceNumber" = "tempFrns"."invoiceNumber"
-    AND "paymentRequests".frn IS NULL;`
-
-  const updateSettlements = `UPDATE "settlements" 
-    SET frn = "tempFrns".frn 
-    FROM "tempFrns" 
-    WHERE "settlements"."invoiceNumber" = "tempFrns"."invoiceNumber"
-    AND "settlements".frn IS NULL;`
-
-  const drop = 'DROP TABLE "tempFrns";'
-
-  fs.writeFileSync('update-frns.sql', `${create}\n${insert}\n${updatePaymentRequests}\n${updateSettlements}\n${drop}`)
+  console.log([...new Set(events)])
 }
 
 module.exports = {
