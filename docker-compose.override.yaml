@@ -1,0 +1,10 @@
+services:
+  ffc-pay-event-migrator:
+    build:
+      context: .
+      target: development
+    ports:
+      - "9229:9229"
+    volumes:
+      - ./app:/home/node/app
+      - ./package.json:/home/node/package.json

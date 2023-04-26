@@ -1,0 +1,7 @@
+services:
+  ffc-pay-event-migrator:
+    build: .
+    image: ffc-pay-event-migrator
+    environment:
+      V1_STORAGE_CONNECTION_STRING: ${V1_STORAGE_CONNECTION_STRING}
+      V2_STORAGE_CONNECTION_STRING: ${V2_STORAGE_CONNECTION_STRING}
