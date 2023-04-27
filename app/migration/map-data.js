@@ -18,7 +18,7 @@ const {
   RESPONSE_REJECTED,
   PAYMENT_REQUEST_BLOCKED,
   PAYMENT_REQUEST_ENRICHED,
-  PAYMENT_QUALITY_CHECK_PASSED,
+  PAYMENT_QUALITY_CHECK_PASSED
 } = require('../constants/v2-events')
 
 const schemeIds = require('../constants/scheme-ids')
