@@ -25,7 +25,7 @@ const {
 
 const schemeIds = require('../constants/scheme-ids')
 
-const mapEventData = (eventType, v1Event) => {
+const mapData = (eventType, v1Event) => {
   switch (eventType) {
     case BATCH_REJECTED:
     case RESPONSE_REJECTED:
@@ -118,5 +118,5 @@ const mapEventData = (eventType, v1Event) => {
 }
 
 module.exports = {
-  mapEventData
+  mapData
 }
