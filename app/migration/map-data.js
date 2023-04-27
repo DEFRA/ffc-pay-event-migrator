@@ -18,9 +18,7 @@ const {
   RESPONSE_REJECTED,
   PAYMENT_REQUEST_BLOCKED,
   PAYMENT_REQUEST_ENRICHED,
-  LEDGER_ASSIGNMENT_REVIEWED,
   PAYMENT_QUALITY_CHECK_PASSED,
-  PAYMENT_QUALITY_CHECK_FAILED
 } = require('../constants/v2-events')
 
 const schemeIds = require('../constants/scheme-ids')
@@ -77,7 +75,7 @@ const mapData = (eventType, v1Event) => {
       }
     case PAYMENT_SETTLED:
       return {
-        ...v1Event.paymentRequest // TODO not part of request
+        ...v1Event.paymentRequest // TODO not in event
       }
     case PAYMENT_SETTLEMENT_UNMATCHED:
       return {
@@ -99,19 +97,7 @@ const mapData = (eventType, v1Event) => {
         attachedBy: v1Event.properties.action.data.user,
         ...v1Event.properties.action.data.paymentRequest
       }
-    case LEDGER_ASSIGNMENT_REVIEWED:
-      return {
-        assignedBy: v1Event.properties.action.data.user,
-        ...v1Event.properties.action.data.provisionalLedgerData,
-        ...v1Event.paymentRequest // TODO missing
-      }
     case PAYMENT_QUALITY_CHECK_PASSED:
-    case PAYMENT_QUALITY_CHECK_FAILED:
-      return {
-        qualityCheckedBy: v1Event.properties.action.data.user,
-        status: v1Event.properties.action.data.status,
-        ...v1Event.paymentRequest // TODO missing
-      }
     default:
       return undefined
   }
