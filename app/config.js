@@ -3,5 +3,6 @@ module.exports = {
   v1Table: 'payeventstore',
   paymentTable: 'payments',
   batchTable: 'batches',
-  warningTable: 'warnings'
+  warningTable: 'warnings',
+  completeMigration: process.env.COMPLETE_MIGRATION ?? true
 }

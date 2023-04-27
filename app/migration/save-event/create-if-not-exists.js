@@ -1,4 +1,5 @@
 const { odata } = require('@azure/data-tables')
+const { completeMigration } = require('../../config')
 
 const createIfNotExists = async (client, entity) => {
   const existingEvents = client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${entity.partitionKey.toString()} and RowKey eq ${entity.rowKey.toString()}` } })
@@ -10,7 +11,9 @@ const createIfNotExists = async (client, entity) => {
   if (matches > 0) {
     return false
   }
-  await client.createEntity(entity)
+  if (completeMigration) {
+    await client.createEntity(entity)
+  }
   return true
 }
 
