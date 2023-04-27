@@ -3,17 +3,17 @@ const eventMap = require('../event-map')
 const { mapSubject } = require('./map-subject')
 const { mapEventData } = require('./map-event-data')
 
-const createV2Event = (event) => {
-  const mappedEvent = eventMap[event.EventType]
+const createV2Event = (v1Event) => {
+  const mappedEvent = eventMap[v1Event.EventType]
   return {
     specversion: '1.0',
     type: mappedEvent.v2,
     source: mappedEvent.source,
     id: uuidv4(),
-    time: event.EventRaised,
-    subject: mapSubject(mappedEvent.v2, event),
+    time: v1Event.EventRaised,
+    subject: mapSubject(mappedEvent.v2, v1Event),
     datacontenttype: 'text/json',
-    data: mapEventData(mappedEvent.v2, event)
+    data: mapEventData(mappedEvent.v2, v1Event)
   }
 }
 
