@@ -1,9 +1,8 @@
 const { TableClient, odata } = require('@azure/data-tables')
-const { storageConnectionString, v1Table, paymentTable, batchTable, holdTable, warningTable } = require('../config')
+const { storageConnectionString, v1Table, paymentTable, batchTable, warningTable } = require('../config')
 const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
 const paymentClient = TableClient.fromConnectionString(storageConnectionString, paymentTable, { allowInsecureConnection: true })
 const batchClient = TableClient.fromConnectionString(storageConnectionString, batchTable, { allowInsecureConnection: true })
-const holdClient = TableClient.fromConnectionString(storageConnectionString, holdTable, { allowInsecureConnection: true })
 const warningClient = TableClient.fromConnectionString(storageConnectionString, warningTable, { allowInsecureConnection: true })
 
 const runMigration = async () => {

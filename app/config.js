@@ -3,6 +3,5 @@ module.exports = {
   v1Table: 'payeventstore',
   paymentTable: 'payments',
   batchTable: 'batches',
-  holdTable: 'holds',
   warningTable: 'warnings'
 }
