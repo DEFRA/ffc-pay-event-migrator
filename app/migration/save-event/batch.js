@@ -2,10 +2,11 @@ const { TableClient } = require('@azure/data-tables')
 const { BATCH } = require('../../constants/categories')
 const { getTimestamp } = require('./get-timestamp')
 const { storageConnectionString, batchTable } = require('../../config')
+const { createIfNotExists } = require('./create-if-not-exists')
 
 const saveBatchEvent = async (event) => {
   const timestamp = getTimestamp(event.time)
-  const batchEntity = {
+  const entity = {
     partitionKey: event.data.filename,
     rowKey: timestamp.toString(),
     category: BATCH,
@@ -14,9 +15,7 @@ const saveBatchEvent = async (event) => {
   }
 
   const client = TableClient.fromConnectionString(storageConnectionString, batchTable, { allowInsecureConnection: true })
-  await client.createEntity(batchEntity)
-
-  return true
+  return createIfNotExists(client, entity)
 }
 
 module.exports = {

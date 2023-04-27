@@ -2,6 +2,7 @@ const { TableClient } = require('@azure/data-tables')
 const { storageConnectionString, paymentTable } = require('../../config')
 const { FRN, CORRELATION_ID, SCHEME_ID, BATCH } = require('../../constants/categories')
 const { createRow } = require('./create-row')
+const { createIfNotExists } = require('./create-if-not-exists')
 
 const savePaymentEvent = async (event) => {
   const frnBasedEntity = createRow(event.data.frn, `${event.data.correlationId}|${event.data.invoiceNumber}`, FRN, event)
@@ -9,16 +10,17 @@ const savePaymentEvent = async (event) => {
   const schemeIdBasedEntity = createRow(event.data.schemeId, `${event.data.frn}|${event.data.invoiceNumber}`, SCHEME_ID, event)
 
   const client = TableClient.fromConnectionString(storageConnectionString, paymentTable, { allowInsecureConnection: true })
-  await client.createEntity(frnBasedEntity)
-  await client.createEntity(correlationIdBasedEntity)
-  await client.createEntity(schemeIdBasedEntity)
+  const frnCreated = await createIfNotExists(client, frnBasedEntity)
+  const correlationIdCreated = await createIfNotExists(client, correlationIdBasedEntity)
+  const schemeIdCreated = await createIfNotExists(client, schemeIdBasedEntity)
 
   if (event.data.batch) {
     const batchBasedEntity = createRow(event.data.batch, `${event.data.frn}|${event.data.invoiceNumber}`, BATCH, event)
-    await client.createEntity(batchBasedEntity)
+    const batchCreated = await createIfNotExists(client, batchBasedEntity)
+    return frnCreated && correlationIdCreated && schemeIdCreated && batchCreated
   }
 
-  return true
+  return frnCreated && correlationIdCreated && schemeIdCreated
 }
 
 module.exports = {
