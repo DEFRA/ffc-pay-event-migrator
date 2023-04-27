@@ -22,8 +22,9 @@ const {
 } = require('../constants/v2-events')
 
 const schemeIds = require('../constants/scheme-ids')
+const { getPaymentRequest } = require('./get-payment-request')
 
-const mapData = (eventType, v1Event) => {
+const mapData = async (eventType, v1Event) => {
   switch (eventType) {
     case BATCH_REJECTED:
     case RESPONSE_REJECTED:
@@ -59,7 +60,7 @@ const mapData = (eventType, v1Event) => {
     case PAYMENT_DAX_REJECTED:
       return {
         message: 'Payment request rejected by DAX',
-        ...v1Event.properties.action.data.paymentRequest, // TODO not in event
+        ...await getPaymentRequest(v1Event),
         ...v1Event.properties.action.data.acknowledgement
       }
     case PAYMENT_INVALID_BANK:
@@ -75,7 +76,7 @@ const mapData = (eventType, v1Event) => {
       }
     case PAYMENT_SETTLED:
       return {
-        ...v1Event.paymentRequest // TODO not in event
+        ...await getPaymentRequest(v1Event)
       }
     case PAYMENT_SETTLEMENT_UNMATCHED:
       return {

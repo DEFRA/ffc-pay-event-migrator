@@ -13,7 +13,7 @@ const runMigration = async () => {
   const existingEvents = []
   const eventResults = v1Client.listEntities()
   for await (const v1Event of eventResults) {
-    const v2Event = createV2Event(v1Event)
+    const v2Event = await createV2Event(v1Event)
     if (validateEvent(v2Event)) {
       validEvents.push(v2Event)
     } else {
