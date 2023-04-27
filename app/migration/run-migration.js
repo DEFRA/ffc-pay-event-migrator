@@ -1,4 +1,5 @@
-const { TableClient, odata } = require('@azure/data-tables')
+const { v4: uuidv4 } = require('uuid')
+const { TableClient } = require('@azure/data-tables')
 const { storageConnectionString, v1Table, paymentTable, batchTable, warningTable } = require('../config')
 const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
 const paymentClient = TableClient.fromConnectionString(storageConnectionString, paymentTable, { allowInsecureConnection: true })
@@ -20,8 +21,14 @@ const runMigration = async () => {
 const createNewEvent = (event) => {
   const mappedEvent = eventMap[event.EventType]
   return {
+    specversion: '1.0',
     type: mappedEvent.v2,
-    source: mappedEvent.source
+    source: mappedEvent.source,
+    id: uuidv4(),
+    time: event.EventRaised,
+    subject: 'TBC',
+    datacontenttype: 'text/json',
+    data: {}
   }
 }
 

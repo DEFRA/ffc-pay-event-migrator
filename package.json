@@ -10,7 +10,8 @@
   "author": "John Watson john.watson1@defra.gov.uk",
   "license": "",
   "dependencies": {
-    "@azure/data-tables": "13.2.0"
+    "@azure/data-tables": "13.2.0",
+    "uuid": "9.0.0"
   },
   "devDependencies": {
     "nodemon": "2.0.20",
