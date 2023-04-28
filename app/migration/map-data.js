@@ -60,7 +60,7 @@ const mapData = async (eventType, v1Event) => {
     case PAYMENT_DAX_REJECTED:
       return {
         message: 'Payment request rejected by DAX',
-        ...await getPaymentRequest(v1Event),
+        ...await getPaymentRequest(PAYMENT_DAX_REJECTED, v1Event),
         ...v1Event.properties.action.data.acknowledgement
       }
     case PAYMENT_INVALID_BANK:
@@ -76,7 +76,7 @@ const mapData = async (eventType, v1Event) => {
       }
     case PAYMENT_SETTLED:
       return {
-        ...await getPaymentRequest(v1Event)
+        ...await getPaymentRequest(PAYMENT_SETTLED, v1Event)
       }
     case PAYMENT_SETTLEMENT_UNMATCHED:
       return {

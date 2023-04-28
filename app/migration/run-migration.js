@@ -6,6 +6,7 @@ const { getEventType } = require('./get-event-type')
 const { saveEvent } = require('./save-event')
 const { createStorage } = require('./create-storage')
 const { createSummary } = require('./create-summary')
+const { sanitizeV1Event } = require('./sanitize-v1-event')
 const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
 
 const runMigration = async () => {
@@ -16,7 +17,8 @@ const runMigration = async () => {
   const existingEvents = []
   const eventResults = v1Client.listEntities()
   for await (const v1Event of eventResults) {
-    const v2Event = await createV2Event(v1Event)
+    const sanitizedV1Event = sanitizeV1Event(v1Event)
+    const v2Event = await createV2Event(sanitizedV1Event)
     if (validateEvent(v2Event)) {
       validEvents.push(v2Event)
     } else {
