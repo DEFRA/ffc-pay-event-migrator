@@ -4,9 +4,11 @@ const { createV2Event } = require('./create-v2-event')
 const { validateEvent } = require('./validate-event')
 const { getEventType } = require('./get-event-type')
 const { saveEvent } = require('./save-event')
+const { createStorage } = require('./create-storage')
 const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
 
 const runMigration = async () => {
+  await createStorage()
   const validEvents = []
   const invalidEvents = []
   const migratedEvents = []

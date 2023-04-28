@@ -8,3 +8,15 @@ services:
     volumes:
       - ./app:/home/node/app
       - ./package.json:/home/node/package.json
+
+  ffc-pay-event-store-azurite:
+    volumes:
+      - azurite_data:/data
+    ports:
+      - "10180:10000"
+      - "10181:10001"
+      - "10182:10002"
+
+volumes:
+  azurite_data:
+

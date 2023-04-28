@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
-const eventMap = require('../event-map')
+const eventMap = require('../constants/event-map')
 const { mapSubject } = require('./map-subject')
-const { mapData } = require('./map-event-data')
+const { mapData } = require('./map-data')
 
 const createV2Event = async (v1Event) => {
   const mappedEvent = eventMap[v1Event.EventType]

@@ -2,6 +2,15 @@ services:
   ffc-pay-event-migrator:
     build: .
     image: ffc-pay-event-migrator
+    depends_on:
+      - ffc-pay-event-store-azurite
     environment:
-      STORAGE_CONNECTION_STRING: ${STORAGE_CONNECTION_STRING}
+      STORAGE_CONNECTION_STRING: ${STORAGE_CONNECTION_STRING:-DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;TableEndpoint=http://ffc-pay-event-store-azurite:10002/devstoreaccount1;}
+      CREATE_TABLES: ${CREATE_TABLES}
       COMPLETE_MIGRATION: ${COMPLETE_MIGRATION}
+
+  ffc-pay-event-store-azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:3.23.0
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --loose"
+    labels:
+      com.docker.compose.pay.role: ffc-pay-event-store-azurite

@@ -4,5 +4,6 @@ module.exports = {
   paymentTable: 'payments',
   batchTable: 'batches',
   warningTable: 'warnings',
-  completeMigration: process.env.COMPLETE_MIGRATION ?? true
+  completeMigration: process.env.COMPLETE_MIGRATION ?? true,
+  createTables: process.env.CREATE_TABLES ?? false
 }
