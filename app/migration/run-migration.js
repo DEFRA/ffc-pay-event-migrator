@@ -5,6 +5,7 @@ const { validateEvent } = require('./validate-event')
 const { getEventType } = require('./get-event-type')
 const { saveEvent } = require('./save-event')
 const { createStorage } = require('./create-storage')
+const { createSummary } = require('./create-summary')
 const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
 
 const runMigration = async () => {
@@ -33,10 +34,7 @@ const runMigration = async () => {
     }
   }
 
-  console.log(validEvents)
-  console.log(invalidEvents)
-  console.log(migratedEvents)
-  console.log(existingEvents)
+  await createSummary(validEvents, invalidEvents, migratedEvents, existingEvents)
 }
 
 module.exports = {

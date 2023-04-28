@@ -1,3 +1,4 @@
 .env
 *.sql
 node_modules
+output
