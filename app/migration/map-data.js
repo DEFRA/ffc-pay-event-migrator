@@ -54,9 +54,7 @@ const mapData = async (eventType, v1Event) => {
         ...v1Event.properties.action.data.paymentRequest
       }
     case PAYMENT_ENRICHED:
-      return {
-        ...v1Event.data.paymentRequest
-      }
+      return v1Event.properties.action.data.paymentRequest
     case PAYMENT_DAX_REJECTED:
       return {
         message: 'Payment request rejected by DAX',
@@ -71,13 +69,9 @@ const mapData = async (eventType, v1Event) => {
     case PAYMENT_PROCESSED:
     case PAYMENT_PAUSED_LEDGER:
     case PAYMENT_PAUSED_DEBT:
-      return {
-        ...v1Event.properties.action.data
-      }
+      return v1Event.properties.action.data
     case PAYMENT_SETTLED:
-      return {
-        ...await getPaymentRequest(PAYMENT_SETTLED, v1Event)
-      }
+      return getPaymentRequest(PAYMENT_SETTLED, v1Event)
     case PAYMENT_SETTLEMENT_UNMATCHED:
       return {
         message: `Unable to find payment request for settlement, Invoice: ${v1Event.properties.action.data.invoiceNumber}, FRN: ${v1Event.properties.action.data.frn}`,
@@ -85,9 +79,7 @@ const mapData = async (eventType, v1Event) => {
         invoiceNumber: v1Event.properties.action.data.invoiceNumber
       }
     case PAYMENT_SUBMITTED:
-      return {
-        ...v1Event.properties.action.data.paymentRequest
-      }
+      return v1Event.properties.action.data.paymentRequest
     case PAYMENT_REQUEST_BLOCKED:
       return {
         message: 'Payment request does not have debt data to attach',

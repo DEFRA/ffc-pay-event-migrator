@@ -8,13 +8,19 @@ const getPaymentRequest = async (eventType, v1Event) => {
   const submissionEvents = []
   let events
   if (eventType === PAYMENT_DAX_REJECTED) {
-    events = await v1Client.listEntities({ queryOptions: { filter: odata`Payload contains ${v1Event.properties.action.data.acknowledgement.invoiceNumber} and EventType eq 'payment-request-submission-batch'` } })
+    events = await v1Client.listEntities({ queryOptions: { filter: odata`EventType eq 'payment-request-submission-batch'` } })
+    for await (const event of events) {
+      if (event.Payload.includes(v1Event.properties.action.data.acknowledgement.invoiceNumber)) {
+        const sanitizedV1Event = sanitizeV1Event(event)
+        submissionEvents.push(sanitizedV1Event)
+      }
+    }
   } else {
-    events = await v1Client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${v1Event.PartitionKey} and EventType eq 'payment-request-submission-batch'` } })
-  }
-  for await (const event of events) {
-    const sanitizedV1Event = sanitizeV1Event(event)
-    submissionEvents.push(sanitizedV1Event)
+    events = await v1Client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${v1Event.partitionKey} and EventType eq 'payment-request-submission-batch'` } })
+    for await (const event of events) {
+      const sanitizedV1Event = sanitizeV1Event(event)
+      submissionEvents.push(sanitizedV1Event)
+    }
   }
   return submissionEvents[0]?.properties.action.data.paymentRequest
 }
