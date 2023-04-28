@@ -5,7 +5,6 @@ const { createRow } = require('./create-row')
 const { createIfNotExists } = require('./create-if-not-exists')
 
 const savePaymentEvent = async (event) => {
-  console.log(event)
   const frnBasedEntity = createRow(event.data.frn, `${event.data.correlationId}|${event.data.invoiceNumber}`, FRN, event)
   const correlationIdBasedEntity = createRow(event.data.correlationId, `${event.data.frn}|${event.data.invoiceNumber}`, CORRELATION_ID, event)
   const schemeIdBasedEntity = createRow(event.data.schemeId, `${event.data.frn}|${event.data.invoiceNumber}`, SCHEME_ID, event)

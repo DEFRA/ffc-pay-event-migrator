@@ -17,7 +17,7 @@ const {
   BATCH_CREATED,
   RESPONSE_REJECTED,
   PAYMENT_REQUEST_BLOCKED,
-  PAYMENT_REQUEST_ENRICHED,
+  PAYMENT_DEBT_ATTACHED,
   PAYMENT_QUALITY_CHECK_PASSED
 } = require('../constants/v2-events')
 
@@ -85,7 +85,7 @@ const mapData = async (eventType, v1Event) => {
         message: 'Payment request does not have debt data to attach',
         ...v1Event.properties.action.data.paymentRequest
       }
-    case PAYMENT_REQUEST_ENRICHED:
+    case PAYMENT_DEBT_ATTACHED:
       return {
         attachedBy: v1Event.properties.action.data.user,
         ...v1Event.properties.action.data.paymentRequest
