@@ -3,6 +3,7 @@ services:
     build:
       context: .
       target: development
+    container_name: ffc-pay-event-migrator-development
     ports:
       - "9229:9229"
     volumes:

@@ -2,6 +2,7 @@ services:
   ffc-pay-event-migrator:
     build: .
     image: ffc-pay-event-migrator
+    container_name: ffc-pay-event-migrator
     depends_on:
       - ffc-pay-event-store-azurite
     environment:
