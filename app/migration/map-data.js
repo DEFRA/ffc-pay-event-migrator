@@ -18,7 +18,7 @@ const {
   RESPONSE_REJECTED,
   PAYMENT_REQUEST_BLOCKED,
   PAYMENT_DEBT_ATTACHED,
-  PAYMENT_QUALITY_CHECK_PASSED
+  PAYMENT_ACKNOWLEDGED
 } = require('../constants/v2-events')
 
 const schemeIds = require('../constants/scheme-ids')
@@ -90,7 +90,8 @@ const mapData = async (eventType, v1Event) => {
         attachedBy: v1Event.properties.action.data.user,
         ...v1Event.properties.action.data.paymentRequest
       }
-    case PAYMENT_QUALITY_CHECK_PASSED:
+    case PAYMENT_ACKNOWLEDGED:
+      return await getPaymentRequest(PAYMENT_ACKNOWLEDGED, v1Event)
     default:
       return undefined
   }
