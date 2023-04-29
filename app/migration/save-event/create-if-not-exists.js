@@ -7,7 +7,7 @@ const createIfNotExists = async (client, entity) => {
   if (entity.category === WARNING) {
     existingEvents = client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${entity.partitionKey.toString()} and time eq ${entity.time.toString()}` } })
   } else {
-    existingEvents = client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${entity.partitionKey.toString()} and RowKey eq ${entity.rowKey.toString()}` } })
+    existingEvents = client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${entity.partitionKey.toString()} and RowKey eq ${entity.rowKey.toString()} and time eq ${entity.time.toString()}` } })
   }
   let matches = 0
   for await (const _ of existingEvents) { // eslint-disable-line no-unused-vars

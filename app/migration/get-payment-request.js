@@ -1,6 +1,6 @@
 const { TableClient, odata } = require('@azure/data-tables')
 const { storageConnectionString, v1Table } = require('../config')
-const { PAYMENT_DAX_REJECTED, PAYMENT_ACKNOWLEDGED } = require('../constants/v2-events')
+const { PAYMENT_DAX_REJECTED, PAYMENT_ACKNOWLEDGED, PAYMENT_SETTLED } = require('../constants/v2-events')
 const { sanitizeV1Event } = require('./sanitize-v1-event')
 
 const getPaymentRequest = async (eventType, v1Event) => {
@@ -23,11 +23,20 @@ const getPaymentRequest = async (eventType, v1Event) => {
         submissionEvents.push(sanitizedV1Event)
       }
     }
-  } else {
+  } else if (eventType === PAYMENT_SETTLED) {
     events = await v1Client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${v1Event.partitionKey} and EventType eq 'payment-request-submission-batch'` } })
     for await (const event of events) {
       const sanitizedV1Event = sanitizeV1Event(event)
       submissionEvents.push(sanitizedV1Event)
+    }
+    if (!submissionEvents.length) {
+      events = await v1Client.listEntities({ queryOptions: { filter: odata`EventType eq 'payment-request-submission-batch'` } })
+      for await (const event of events) {
+        if (v1Event.properties.action.data?.returnMessage?.invoiceNumber && event.Payload.includes(v1Event.properties.action.data.returnMessage.invoiceNumber)) {
+          const sanitizedV1Event = sanitizeV1Event(event)
+          submissionEvents.push(sanitizedV1Event)
+        }
+      }
     }
   }
   return submissionEvents[0]?.properties.action.data.paymentRequest
