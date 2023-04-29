@@ -38,6 +38,17 @@ const getPaymentRequest = async (eventType, v1Event) => {
         }
       }
     }
+    if (!submissionEvents.length) {
+      events = await v1Client.listEntities({ queryOptions: { filter: odata`EventType eq 'payment-request-submission-batch'` } })
+      for await (const event of events) {
+        if (v1Event.properties.action.data?.paymentRequestNumber &&
+          v1Event.properties.action.data?.agreementNumber &&
+          event.Payload.includes(`"paymentRequestNumber":${v1Event.properties.action.data?.paymentRequestNumber},"agreementNumber:${v1Event.properties.action.data?.agreementNumber}"`)) {
+          const sanitizedV1Event = sanitizeV1Event(event)
+          submissionEvents.push(sanitizedV1Event)
+        }
+      }
+    }
   }
   return submissionEvents[0]?.properties.action.data.paymentRequest
 }
