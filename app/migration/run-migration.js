@@ -10,6 +10,7 @@ const { sanitizeV1Event } = require('./sanitize-v1-event')
 const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
 
 const runMigration = async () => {
+  console.log(require('../config'))
   const timeStarted = new Date()
   console.log(`Migration started at ${timeStarted.toISOString()}`)
   await createStorage()
