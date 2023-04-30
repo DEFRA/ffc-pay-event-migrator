@@ -17,7 +17,7 @@ const getPaymentRequest = async (eventType, v1Event) => {
       return sanitizedEvents.find(x => x.properties.action.data.paymentRequest.invoiceNumber === v1Event.properties.action.data.invoiceNumber)?.properties.action.data.paymentRequest
     case PAYMENT_SETTLED:
       return sanitizedEvents.find(x =>
-        (x.partitionKey === v1Event.partitionKey) ||
+        (v1Event.partitionKey === x.partitionKey) ||
         (v1Event.properties.action.data?.returnMessage?.invoiceNumber && v1Event.properties.action.data.returnMessage.invoiceNumber === x.properties.action.data.paymentRequest.invoiceNumber) ||
         (v1Event.properties.action.data?.paymentRequestNumber &&
           v1Event.properties.action.data?.agreementNumber &&
