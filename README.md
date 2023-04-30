@@ -30,25 +30,44 @@ These configuration values should be set in the [docker-compose.yaml](docker-com
 | `CREATE_TABLES` | Create tables on startup, `true` or `false` | `false` |
 | `COMPLETE_MIGRATION` | Complete migration or just summarise, `true` or `false` | `true` |
 
-#### Docker
+## How to start the service
 
-Docker Compose can be used to build the container image.
+Docker Compose or Docker can be used to build the container image.
+
+### Docker Compose
 
 ```
-docker-compose build
+docker-compose up --build
 ```
 
 The service will file watch application and test files so no need to rebuild the container unless a change to an npm package is made.
 
-## How to start the service
+Environment variables will automatically be loaded from a local `.env` file.
 
-The service can be run using the [start](scripts/start) script.
+The service can also be run using the [start](scripts/start) script.
 ```
 ./scripts/start
 ```
 
 This script accepts any Docker Compose [Up](https://docs.docker.com/engine/reference/commandline/compose_up/) argument.
 
+### Docker
+
+#### Build
+
+```
+docker build -t ffc-pay-event-migrator .
+```
+
+#### Run
+
+```
+docker run --env-file .env ffc-pay-event-migrator
+```
+Or:
+```
+docker run -e STORAGE_CONNECTION_STRING="MY_CONNECTION_STRING" ffc-pay-event-migrator 
+```
 
 ## Licence
 
