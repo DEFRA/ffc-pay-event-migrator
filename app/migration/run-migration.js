@@ -10,8 +10,8 @@ const { sanitizeV1Event } = require('./sanitize-v1-event')
 const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
 
 const runMigration = async () => {
-  console.log('Running migration...')
-  console.log(new Date())
+  const timeStarted = new Date()
+  console.log(`Migration started at ${timeStarted.toISOString()}`)
   await createStorage()
   const validEvents = []
   const invalidEvents = []
@@ -38,10 +38,12 @@ const runMigration = async () => {
     }
   }
 
-  console.log('Migration complete')
-  console.log(new Date())
-
   await createSummary(validEvents, invalidEvents, migratedEvents, existingEvents)
+
+  const timeCompleted = new Date()
+  console.log(`Migration completed at ${timeCompleted.toISOString()}`)
+  const timeTaken = ((timeCompleted - timeStarted) / 1000) / 60
+  console.log(`Duration: ${timeTaken.toFixed(4)} minutes`)
 }
 
 module.exports = {

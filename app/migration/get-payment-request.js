@@ -3,54 +3,39 @@ const { storageConnectionString, v1Table } = require('../config')
 const { PAYMENT_DAX_REJECTED, PAYMENT_ACKNOWLEDGED, PAYMENT_SETTLED } = require('../constants/v2-events')
 const { sanitizeV1Event } = require('./sanitize-v1-event')
 
+const sanitizedEvents = []
+let haveEvents = false
+
 const getPaymentRequest = async (eventType, v1Event) => {
-  const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
-  const submissionEvents = []
-  let events
-  if (eventType === PAYMENT_DAX_REJECTED) {
-    events = await v1Client.listEntities({ queryOptions: { filter: odata`EventType eq 'payment-request-submission-batch'` } })
-    for await (const event of events) {
-      if (event.Payload.includes(v1Event.properties.action.data.acknowledgement.invoiceNumber)) {
-        const sanitizedV1Event = sanitizeV1Event(event)
-        submissionEvents.push(sanitizedV1Event)
-      }
-    }
-  } else if (eventType === PAYMENT_ACKNOWLEDGED) {
-    events = await v1Client.listEntities({ queryOptions: { filter: odata`EventType eq 'payment-request-submission-batch'` } })
-    for await (const event of events) {
-      if (event.Payload.includes(v1Event.properties.action.data.invoiceNumber)) {
-        const sanitizedV1Event = sanitizeV1Event(event)
-        submissionEvents.push(sanitizedV1Event)
-      }
-    }
-  } else if (eventType === PAYMENT_SETTLED) {
-    events = await v1Client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${v1Event.partitionKey} and EventType eq 'payment-request-submission-batch'` } })
-    for await (const event of events) {
-      const sanitizedV1Event = sanitizeV1Event(event)
-      submissionEvents.push(sanitizedV1Event)
-    }
-    if (!submissionEvents.length) {
-      events = await v1Client.listEntities({ queryOptions: { filter: odata`EventType eq 'payment-request-submission-batch'` } })
-      for await (const event of events) {
-        if (v1Event.properties.action.data?.returnMessage?.invoiceNumber && event.Payload.includes(v1Event.properties.action.data.returnMessage.invoiceNumber)) {
-          const sanitizedV1Event = sanitizeV1Event(event)
-          submissionEvents.push(sanitizedV1Event)
-        }
-      }
-    }
-    if (!submissionEvents.length) {
-      events = await v1Client.listEntities({ queryOptions: { filter: odata`EventType eq 'payment-request-submission-batch'` } })
-      for await (const event of events) {
-        if (v1Event.properties.action.data?.paymentRequestNumber &&
-          v1Event.properties.action.data?.agreementNumber &&
-          event.Payload.includes(`"paymentRequestNumber":${v1Event.properties.action.data?.paymentRequestNumber},"agreementNumber:${v1Event.properties.action.data?.agreementNumber}"`)) {
-          const sanitizedV1Event = sanitizeV1Event(event)
-          submissionEvents.push(sanitizedV1Event)
-        }
-      }
-    }
+  if (!haveEvents) {
+    await getEvents()
   }
-  return submissionEvents[0]?.properties.action.data.paymentRequest
+  switch (eventType) {
+    case PAYMENT_DAX_REJECTED:
+      return sanitizedEvents.find(x => x.properties.action.data.paymentRequest.invoiceNumber === v1Event.properties.action.data.acknowledgement.invoiceNumber)?.properties.action.data.paymentRequest
+    case PAYMENT_ACKNOWLEDGED:
+      return sanitizedEvents.find(x => x.properties.action.data.paymentRequest.invoiceNumber === v1Event.properties.action.data.invoiceNumber)?.properties.action.data.paymentRequest
+    case PAYMENT_SETTLED:
+      return sanitizedEvents.find(x =>
+        (x.partitionKey === v1Event.partitionKey) ||
+        (v1Event.properties.action.data?.returnMessage?.invoiceNumber && v1Event.properties.action.data.returnMessage.invoiceNumber === x.properties.action.data.paymentRequest.invoiceNumber) ||
+        (v1Event.properties.action.data?.paymentRequestNumber &&
+          v1Event.properties.action.data?.agreementNumber &&
+          v1Event.properties.action.data.paymentRequestNumber === x.properties.action.data.paymentRequest.paymentRequestNumber &&
+          v1Event.properties.action.data.agreementNumber === x.properties.action.data.paymentRequest.agreementNumber))?.properties.action.data.paymentRequest
+    default:
+      return undefined
+  }
+}
+
+const getEvents = async () => {
+  const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
+  const events = v1Client.listEntities({ queryOptions: { filter: odata`EventType eq 'payment-request-submission-batch'` } })
+  for await (const event of events) {
+    const sanitizedV1Event = sanitizeV1Event(event)
+    sanitizedEvents.push(sanitizedV1Event)
+  }
+  haveEvents = true
 }
 
 module.exports = {
