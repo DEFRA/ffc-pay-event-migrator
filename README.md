@@ -34,6 +34,12 @@ These configuration values should be set in the [docker-compose.yaml](docker-com
 
 Docker Compose or Docker can be used to build the container image.
 
+An `output` folder should be created to store the summary files
+
+```
+mkdir -p output
+```
+
 ### Docker Compose
 
 
@@ -63,11 +69,11 @@ docker build -t ffc-pay-event-migrator .
 #### Run
 
 ```
-docker run --env-file .env ffc-pay-event-migrator
+docker run --env-file .env -v ./output:./home/node/output ffc-pay-event-migrator
 ```
 Or:
 ```
-docker run -e STORAGE_CONNECTION_STRING="MY_CONNECTION_STRING" ffc-pay-event-migrator 
+docker run -e STORAGE_CONNECTION_STRING="MY_CONNECTION_STRING" -v ./output:./home/node/output ffc-pay-event-migrator 
 ```
 
 ## Licence
