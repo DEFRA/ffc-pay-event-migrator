@@ -73,7 +73,7 @@ docker run --env-file .env -v ./output:./home/node/output ffc-pay-event-migrator
 ```
 Or:
 ```
-docker run -e STORAGE_CONNECTION_STRING="MY_CONNECTION_STRING" -v ./output:./home/node/output ffc-pay-event-migrator 
+docker run -e STORAGE_CONNECTION_STRING="MY_CONNECTION_STRING" -v $(pwd)/output:/home/node/output ffc-pay-event-migrator 
 ```
 
 ## Licence
