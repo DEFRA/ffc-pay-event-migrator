@@ -70,16 +70,8 @@ const mapData = async (eventType, v1Event) => {
     case PAYMENT_PAUSED_LEDGER:
     case PAYMENT_PAUSED_DEBT:
       return v1Event.properties.action.data
-    case PAYMENT_SETTLED: {
-      const paymentRequest = await getPaymentRequest(PAYMENT_SETTLED, v1Event)
-      if (paymentRequest) {
-        return {
-          ...paymentRequest,
-          ...v1Event.properties.action.data
-        }
-      }
-      return undefined
-    }
+    case PAYMENT_SETTLED:
+      return getSettledPaymentRequest(v1Event)
     case PAYMENT_SETTLEMENT_UNMATCHED:
       return {
         message: `Unable to find payment request for settlement, Invoice: ${v1Event.properties.action.data.invoiceNumber}, FRN: ${v1Event.properties.action.data.frn}`,
@@ -103,6 +95,17 @@ const mapData = async (eventType, v1Event) => {
     default:
       return undefined
   }
+}
+
+const getSettledPaymentRequest = async (v1Event) => {
+  const paymentRequest = await getPaymentRequest(PAYMENT_SETTLED, v1Event)
+  if (paymentRequest) {
+    return {
+      ...paymentRequest,
+      ...v1Event.properties.action.data
+    }
+  }
+  return undefined
 }
 
 module.exports = {
