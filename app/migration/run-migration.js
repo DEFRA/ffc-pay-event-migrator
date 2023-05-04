@@ -17,7 +17,11 @@ const runMigration = async () => {
   const invalidEvents = []
   const migratedEvents = []
   const existingEvents = []
+
+  console.log('Retrieving all V1 events')
   const eventResults = v1Client.listEntities()
+
+  console.log('Validating V1 events')
   for await (const v1Event of eventResults) {
     const sanitizedV1Event = sanitizeV1Event(v1Event)
     const v2Event = await createV2Event(sanitizedV1Event)
@@ -28,6 +32,7 @@ const runMigration = async () => {
     }
   }
 
+  console.log('Migrating valid V1 events to V2 stores')
   for (const event of validEvents) {
     const eventType = getEventType(event.type)
     const saved = await saveEvent(event, eventType)
@@ -38,6 +43,7 @@ const runMigration = async () => {
     }
   }
 
+  console.log('Creating summary')
   await createSummary(validEvents, invalidEvents, migratedEvents, existingEvents)
 
   const timeCompleted = new Date()
