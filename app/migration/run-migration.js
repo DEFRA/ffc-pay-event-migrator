@@ -1,5 +1,5 @@
 const { TableClient } = require('@azure/data-tables')
-const { storageConnectionString, v1Table } = require('../config')
+const { storageConnectionString, v1Table, batchTable, paymentTable, warningTable } = require('../config')
 const { createV2Event } = require('./create-v2-event')
 const { validateEvent } = require('./validate-event')
 const { getEventType } = require('./get-event-type')
@@ -8,6 +8,9 @@ const { createStorage } = require('./create-storage')
 const { createSummary } = require('./create-summary')
 const { sanitizeV1Event } = require('./sanitize-v1-event')
 const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
+const batchClient = TableClient.fromConnectionString(storageConnectionString, batchTable, { allowInsecureConnection: true })
+const paymentClient = TableClient.fromConnectionString(storageConnectionString, paymentTable, { allowInsecureConnection: true })
+const warningClient = TableClient.fromConnectionString(storageConnectionString, warningTable, { allowInsecureConnection: true })
 
 const runMigration = async () => {
   const timeStarted = new Date()
@@ -35,7 +38,7 @@ const runMigration = async () => {
   console.log('Migrating valid V1 events to V2 stores')
   for (const event of validEvents) {
     const eventType = getEventType(event.type)
-    const saved = await saveEvent(event, eventType)
+    const saved = await saveEvent(event, eventType, batchClient, paymentClient, warningClient)
     if (saved) {
       migratedEvents.push(event)
     } else {

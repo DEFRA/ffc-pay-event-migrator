@@ -3,14 +3,14 @@ const { savePaymentEvent } = require('./payment')
 const { saveWarningEvent } = require('./warning')
 const { saveBatchEvent } = require('./batch')
 
-const saveEvent = async (event, eventType) => {
+const saveEvent = async (event, eventType, batchClient, paymentClient, warningClient) => {
   switch (eventType) {
     case PAYMENT_EVENT:
-      return savePaymentEvent(event)
+      return savePaymentEvent(paymentClient, event)
     case WARNING_EVENT:
-      return saveWarningEvent(event)
+      return saveWarningEvent(warningClient, event)
     case BATCH_EVENT:
-      return saveBatchEvent(event)
+      return saveBatchEvent(batchClient, event)
     default:
       throw new Error(`Unknown event type: ${eventType}`)
   }
