@@ -12,9 +12,10 @@ containerConfigMap:
   name: ffc-pay-event-migrator-config-map
 
 container:
+  nodeOptions: --max-old-space-size=8192
   requestMemory: 150Mi
   requestCpu: 120m
-  limitMemory: 1500Mi
+  limitMemory: 1000Mi
   limitCpu: 1000m
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false

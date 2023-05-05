@@ -2,6 +2,7 @@
 {{- define "ffc-pay-event-migrator.config-map" -}}
 data:
   NODE_ENV: {{ quote .Values.environment }}
+  NODE_OPTIONS: {{ quote .Values.container.nodeOptions }}
   STORAGE_CONNECTION_STRING: {{ quote .Values.container.azureStorageConnectionString }}
   STORAGE_USE_CONNECTION_STRING: {{ quote .Values.container.azureStorageUseConnectionString }}
   STORAGE_ACCOUNT_NAME: {{ quote .Values.container.azureStorageAccountName }}
