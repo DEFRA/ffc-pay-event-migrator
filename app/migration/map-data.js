@@ -24,7 +24,7 @@ const {
 const schemeIds = require('../constants/scheme-ids')
 const { getPaymentRequest } = require('./get-payment-request')
 
-const mapData = async (eventType, v1Event) => {
+const mapData = async (eventType, v1Event, v1Client) => {
   switch (eventType) {
     case BATCH_REJECTED:
     case RESPONSE_REJECTED:
@@ -58,7 +58,7 @@ const mapData = async (eventType, v1Event) => {
     case PAYMENT_DAX_REJECTED:
       return {
         message: 'Payment request rejected by DAX',
-        ...await getPaymentRequest(PAYMENT_DAX_REJECTED, v1Event),
+        ...await getPaymentRequest(PAYMENT_DAX_REJECTED, v1Event, v1Client),
         ...v1Event.properties.action.data.acknowledgement
       }
     case PAYMENT_INVALID_BANK:
@@ -71,7 +71,7 @@ const mapData = async (eventType, v1Event) => {
     case PAYMENT_PAUSED_DEBT:
       return v1Event.properties.action.data
     case PAYMENT_SETTLED:
-      return getSettledPaymentRequest(v1Event)
+      return getSettledPaymentRequest(v1Event, v1Client)
     case PAYMENT_SETTLEMENT_UNMATCHED:
       return {
         message: `Unable to find payment request for settlement, Invoice: ${v1Event.properties.action.data.invoiceNumber}, FRN: ${v1Event.properties.action.data.frn}`,
@@ -91,14 +91,14 @@ const mapData = async (eventType, v1Event) => {
         ...v1Event.properties.action.data.paymentRequest
       }
     case PAYMENT_ACKNOWLEDGED:
-      return await getPaymentRequest(PAYMENT_ACKNOWLEDGED, v1Event)
+      return await getPaymentRequest(PAYMENT_ACKNOWLEDGED, v1Event, v1Client)
     default:
       return undefined
   }
 }
 
-const getSettledPaymentRequest = async (v1Event) => {
-  const paymentRequest = await getPaymentRequest(PAYMENT_SETTLED, v1Event)
+const getSettledPaymentRequest = async (v1Event, v1Client) => {
+  const paymentRequest = await getPaymentRequest(PAYMENT_SETTLED, v1Event, v1Client)
   if (paymentRequest) {
     return {
       ...paymentRequest,

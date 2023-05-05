@@ -6,9 +6,9 @@ const { sanitizeV1Event } = require('./sanitize-v1-event')
 const sanitizedEvents = []
 let haveEvents = false
 
-const getPaymentRequest = async (eventType, v1Event) => {
+const getPaymentRequest = async (eventType, v1Event, v1Client) => {
   if (!haveEvents) {
-    await getEvents()
+    await getEvents(v1Client)
   }
   switch (eventType) {
     case PAYMENT_DAX_REJECTED:
@@ -28,8 +28,7 @@ const getPaymentRequest = async (eventType, v1Event) => {
   }
 }
 
-const getEvents = async () => {
-  const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
+const getEvents = async (v1Client) => {
   const events = v1Client.listEntities({ queryOptions: { filter: odata`EventType eq 'payment-request-submission-batch'` } })
   for await (const event of events) {
     const sanitizedV1Event = sanitizeV1Event(event)

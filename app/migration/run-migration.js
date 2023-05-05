@@ -43,7 +43,7 @@ const runMigration = async () => {
   console.log('Validating V1 events')
   for await (const v1Event of eventResults) {
     const sanitizedV1Event = sanitizeV1Event(v1Event)
-    const v2Event = await createV2Event(sanitizedV1Event)
+    const v2Event = await createV2Event(sanitizedV1Event, v1Client)
     if (validateEvent(v2Event)) {
       validEvents.push(v2Event)
     } else {
