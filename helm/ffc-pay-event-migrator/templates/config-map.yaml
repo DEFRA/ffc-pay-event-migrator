@@ -5,4 +5,5 @@ data:
   STORAGE_CONNECTION_STRING: {{ quote .Values.container.azureStorageConnectionString }}
   STORAGE_USE_CONNECTION_STRING: {{ quote .Values.container.azureStorageUseConnectionString }}
   STORAGE_ACCOUNT_NAME: {{ quote .Values.container.azureStorageAccountName }}
+  TEXT_SUMMARY: {{ quote .Values.container.textSummary }}
 {{- end -}}

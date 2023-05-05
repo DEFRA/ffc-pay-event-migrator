@@ -19,6 +19,7 @@ container:
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
   azureStorageAccountName: ffcpay
+  textSummary: false
 
 aadPodIdentity: true
 
