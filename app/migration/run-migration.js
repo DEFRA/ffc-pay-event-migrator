@@ -45,10 +45,10 @@ const runMigration = async () => {
   const eventResults = v1Client.listEntities()
 
   console.log('Validating V1 events')
-  let eventsProcessed = 0
+  let eventsValidated = 0
   for await (const v1Event of eventResults) {
-    if (eventsProcessed % 5000 === 0) {
-      console.log(`Processed ${eventsProcessed} events`)
+    if (eventsValidated % 5000 === 0) {
+      console.log(`Validated ${eventsValidated} events`)
     }
     const sanitizedV1Event = sanitizeV1Event(v1Event)
     const v2Event = await createV2Event(sanitizedV1Event, v1Client)
@@ -61,11 +61,15 @@ const runMigration = async () => {
       }
       totalInvalidEvents++
     }
-    eventsProcessed++
+    eventsValidated++
   }
 
   console.log('Migrating valid V1 events to V2 stores')
+  let processedEvents = 0
   for (const event of validEvents) {
+    if (processedEvents % 5000 === 0) {
+      console.log(`Migrated ${processedEvents} events`)
+    }
     const eventType = getEventType(event.type)
     const saved = await saveEvent(event, eventType, batchClient, paymentClient, warningClient)
     if (saved) {
@@ -79,6 +83,7 @@ const runMigration = async () => {
       }
       totalExistingEvents++
     }
+    processedEvents++
   }
 
   console.log('Creating summary')
