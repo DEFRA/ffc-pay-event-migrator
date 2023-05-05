@@ -3,4 +3,6 @@
 data:
   NODE_ENV: {{ quote .Values.environment }}
   STORAGE_CONNECTION_STRING: {{ quote .Values.container.azureStorageConnectionString }}
+  STORAGE_USE_CONNECTION_STRING: {{ quote .Values.container.azureStorageUseConnectionString }}
+  STORAGE_ACCOUNT_NAME: {{ quote .Values.container.azureStorageAccountName }}
 {{- end -}}

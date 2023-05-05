@@ -1,5 +1,6 @@
 const { TableClient } = require('@azure/data-tables')
-const { storageConnectionString, v1Table, batchTable, paymentTable, warningTable } = require('../config')
+const { DefaultAzureCredential } = require('@azure/identity')
+const { storageConnectionString, useConnectionString, storageName, v1Table, batchTable, paymentTable, warningTable } = require('../config')
 const { createV2Event } = require('./create-v2-event')
 const { validateEvent } = require('./validate-event')
 const { getEventType } = require('./get-event-type')
@@ -7,15 +8,28 @@ const { saveEvent } = require('./save-event')
 const { createStorage } = require('./create-storage')
 const { createSummary } = require('./create-summary')
 const { sanitizeV1Event } = require('./sanitize-v1-event')
-const v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
-const batchClient = TableClient.fromConnectionString(storageConnectionString, batchTable, { allowInsecureConnection: true })
-const paymentClient = TableClient.fromConnectionString(storageConnectionString, paymentTable, { allowInsecureConnection: true })
-const warningClient = TableClient.fromConnectionString(storageConnectionString, warningTable, { allowInsecureConnection: true })
+
+let v1Client
+let batchClient
+let paymentClient
+let warningClient
+
+if (useConnectionString) {
+  v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
+  batchClient = TableClient.fromConnectionString(storageConnectionString, batchTable, { allowInsecureConnection: true })
+  paymentClient = TableClient.fromConnectionString(storageConnectionString, paymentTable, { allowInsecureConnection: true })
+  warningClient = TableClient.fromConnectionString(storageConnectionString, warningTable, { allowInsecureConnection: true })
+} else {
+  v1Client = new TableClient(`https://${storageName}.table.core.windows.net`, v1Table, new DefaultAzureCredential())
+  paymentClient = new TableClient(`https://${storageName}.table.core.windows.net`, paymentTable, new DefaultAzureCredential())
+  warningClient = new TableClient(`https://${storageName}.table.core.windows.net`, warningTable, new DefaultAzureCredential())
+  batchClient = new TableClient(`https://${storageName}.table.core.windows.net`, batchTable, new DefaultAzureCredential())
+}
 
 const runMigration = async () => {
   const timeStarted = new Date()
   console.log(`Migration started at ${timeStarted.toISOString()}`)
-  await createStorage()
+  await createStorage(v1Client, batchClient, paymentClient, warningClient)
   const validEvents = []
   const invalidEvents = []
   const migratedEvents = []

@@ -22,7 +22,7 @@ Optional:
 
 ### Configuration
 
-These configuration values should be set in the [docker-compose.yaml](docker-compose.yaml) file or Helm [values file](helm/ffc-pay-event-hub/values.yaml) if running Kubernetes.
+These configuration values should be set in the [docker-compose.yaml](docker-compose.yaml) file or Helm [values file](helm/ffc-pay-event-migrator/values.yaml) if running Kubernetes.
 
 | Name | Description | Default |
 | ---| --- | --- |

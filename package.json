@@ -11,8 +11,9 @@
   "license": "",
   "dependencies": {
     "@azure/data-tables": "13.2.0",
-    "uuid": "9.0.0",
-    "joi": "17.4.2"
+    "@azure/identity": "3.1.4",
+    "joi": "17.4.2",
+    "uuid": "9.0.0"
   },
   "devDependencies": {
     "nodemon": "2.0.20",

@@ -17,6 +17,15 @@ container:
   limitMemory: 500Mi
   limitCpu: 500m
   azureStorageConnectionString: dummy
+  azureStorageUseConnectionString: false
+  azureStorageAccountName: ffcpay
+
+aadPodIdentity: true
+
+azureIdentity:
+  clientID: not-a-real-clientID
+  resourceID: not-a-real-resourceID
+
 
 cronJob:
   schedule: "0 0 * * *"

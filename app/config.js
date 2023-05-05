@@ -1,5 +1,7 @@
 const config = {
   storageConnectionString: process.env.STORAGE_CONNECTION_STRING,
+  useConnectionString: (process.env.USE_STORAGE_CONNECTION_STRING || 'true') === 'true',
+  storageName: process.env.STORAGE_ACCOUNT_NAME,
   v1Table: 'payeventstore',
   paymentTable: 'payments',
   batchTable: 'batches',
