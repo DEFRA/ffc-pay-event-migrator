@@ -1,20 +1,37 @@
-const { odata } = require('@azure/data-tables')
 const { completeMigration } = require('../../config')
-const { WARNING } = require('../../constants/categories')
+const { PAYMENT_EVENT, WARNING_EVENT, BATCH_EVENT } = require('../../constants/event-types')
 
-const createIfNotExists = async (client, entity) => {
-  let existingEvents
-  if (entity.category === WARNING) {
-    existingEvents = client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${entity.partitionKey.toString()} and type eq ${entity.type} and time eq ${entity.time.toString()}` } })
+const existingEventsCaptured = {
+  [PAYMENT_EVENT]: false,
+  [WARNING_EVENT]: false,
+  [BATCH_EVENT]: false
+}
+
+const v2Events = {
+  [PAYMENT_EVENT]: [],
+  [WARNING_EVENT]: [],
+  [BATCH_EVENT]: []
+}
+
+const createIfNotExists = async (client, entity, eventType) => {
+  if (!existingEventsCaptured[eventType]) {
+    console.log(`Capturing existing ${eventType} events`)
+    for await (const v2Event of client.listEntities()) {
+      v2Events[eventType].push(v2Event)
+    }
+    existingEventsCaptured[eventType] = true
+  }
+
+  let hasExistingEvent = false
+  if (eventType === WARNING_EVENT) {
+    hasExistingEvent = v2Events[eventType].some(v2Event => v2Event.partitionKey === entity.partitionKey && v2Event.type === entity.type && v2Event.time.toString() === entity.time.toString())
+  } else if (eventType === BATCH_EVENT) {
+    hasExistingEvent = v2Events[eventType].some(v2Event => v2Event.partitionKey === entity.partitionKey && v2Event.data === entity.data)
   } else {
-    existingEvents = client.listEntities({ queryOptions: { filter: odata`PartitionKey eq ${entity.partitionKey.toString()} and RowKey ge ${removeTimeFromRowKey(entity.rowKey).toString()} and type eq ${entity.type} and data eq ${entity.data.toString()}` } })
-  }
-  let matches = 0
-  for await (const _ of existingEvents) { // eslint-disable-line no-unused-vars
-    matches++
+    hasExistingEvent = v2Events[eventType].some(v2Event => v2Event.partitionKey === entity.partitionKey && v2Event.rowKey.startsWith(removeTimeFromRowKey(entity.rowKey)) && v2Event.type === entity.type && v2Event.data === entity.data)
   }
 
-  if (matches > 0) {
+  if (hasExistingEvent) {
     return false
   }
   if (completeMigration) {

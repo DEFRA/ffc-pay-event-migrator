@@ -8,7 +8,7 @@ const config = {
   warningTable: 'warnings',
   completeMigration: (process.env.COMPLETE_MIGRATION || 'true') === 'true',
   createTables: (process.env.CREATE_TABLES || 'false') === 'true',
-  textSummary: (process.env.TEXT_SUMMARY || 'true') === 'true',
+  textSummary: (process.env.TEXT_SUMMARY || 'true') === 'true'
 }
 
 if (!config.storageConnectionString) {
