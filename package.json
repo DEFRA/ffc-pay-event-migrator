@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-event-migrator",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Migrate events from V1 event store to V2",
   "main": "app/index.js",
   "scripts": {
