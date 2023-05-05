@@ -3,7 +3,7 @@ const fs = require('fs/promises')
 const { createSummaryContent } = require('./create-summary-content')
 const { textSummary } = require('../config')
 
-const createSummary = async (validEvents, invalidEvents, migratedEvents, existingEvents) => {
+const createSummary = async (validEvents, invalidEvents, migratedEvents, existingEvents, totalValidEvents, totalInvalidEvents, totalMigratedEvents, totalExistingEvents) => {
   if (textSummary) {
     const validEventContent = createSummaryContent(validEvents)
     await fs.writeFile(path.resolve(__dirname, './output/valid-events.txt'), validEventContent)
@@ -18,11 +18,11 @@ const createSummary = async (validEvents, invalidEvents, migratedEvents, existin
     await fs.writeFile(path.resolve(__dirname, './output/existing-events.txt'), existingEventContent)
   }
 
-  console.log(`Total events: ${validEvents.length + invalidEvents.length}`)
-  console.log(`Valid events: ${validEvents.length}`)
-  console.log(`Invalid events: ${invalidEvents.length}`)
-  console.log(`Successfully migrated events: ${migratedEvents.length}`)
-  console.log(`Events not needing migration: ${existingEvents.length}`)
+  console.log(`Total events: ${totalValidEvents + totalInvalidEvents}`)
+  console.log(`Valid events: ${totalValidEvents}`)
+  console.log(`Invalid events: ${totalInvalidEvents}`)
+  console.log(`Successfully migrated events: ${totalMigratedEvents}`)
+  console.log(`Events not needing migration: ${totalExistingEvents}`)
 }
 
 module.exports = {

@@ -1,6 +1,6 @@
 const { TableClient } = require('@azure/data-tables')
 const { DefaultAzureCredential } = require('@azure/identity')
-const { storageConnectionString, useConnectionString, storageName, v1Table, batchTable, paymentTable, warningTable } = require('../config')
+const { storageConnectionString, useConnectionString, storageName, v1Table, batchTable, paymentTable, warningTable, textSummary } = require('../config')
 const { createV2Event } = require('./create-v2-event')
 const { validateEvent } = require('./validate-event')
 const { getEventType } = require('./get-event-type')
@@ -33,9 +33,13 @@ const runMigration = async () => {
   console.log(`Migration started at ${timeStarted.toISOString()}`)
   await createStorage(v1Client, batchClient, paymentClient, warningClient)
   const validEvents = []
+  let totalValidEvents = 0
   const invalidEvents = []
+  let totalInvalidEvents = 0
   const migratedEvents = []
+  let totalMigratedEvents = 0
   const existingEvents = []
+  let totalExistingEvents = 0
 
   console.log('Retrieving all V1 events')
   const eventResults = v1Client.listEntities()
@@ -46,8 +50,12 @@ const runMigration = async () => {
     const v2Event = await createV2Event(sanitizedV1Event, v1Client)
     if (validateEvent(v2Event)) {
       validEvents.push(v2Event)
+      totalValidEvents++
     } else {
-      invalidEvents.push(v2Event)
+      if (textSummary) {
+        invalidEvents.push(v2Event)
+      }
+      totalInvalidEvents++
     }
   }
 
@@ -56,14 +64,20 @@ const runMigration = async () => {
     const eventType = getEventType(event.type)
     const saved = await saveEvent(event, eventType, batchClient, paymentClient, warningClient)
     if (saved) {
-      migratedEvents.push(event)
+      if (textSummary) {
+        migratedEvents.push(event)
+      }
+      totalMigratedEvents++
     } else {
-      existingEvents.push(event)
+      if (textSummary) {
+        existingEvents.push(event)
+      }
+      totalExistingEvents++
     }
   }
 
   console.log('Creating summary')
-  await createSummary(validEvents, invalidEvents, migratedEvents, existingEvents)
+  await createSummary(validEvents, invalidEvents, migratedEvents, existingEvents, totalValidEvents, totalInvalidEvents, totalMigratedEvents, totalExistingEvents)
 
   const timeCompleted = new Date()
   console.log(`Migration completed at ${timeCompleted.toISOString()}`)
