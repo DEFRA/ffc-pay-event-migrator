@@ -14,7 +14,7 @@ containerConfigMap:
 container:
   requestMemory: 150Mi
   requestCpu: 120m
-  limitMemory: 500Mi
+  limitMemory: 1000Mi
   limitCpu: 500m
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
