@@ -47,7 +47,7 @@ const runMigration = async () => {
   console.log('Validating V1 events')
   let eventsProcessed = 0
   for await (const v1Event of eventResults) {
-    if (eventsProcessed % 1000 === 0) {
+    if (eventsProcessed % 5000 === 0) {
       console.log(`Processed ${eventsProcessed} events`)
     }
     const sanitizedV1Event = sanitizeV1Event(v1Event)
