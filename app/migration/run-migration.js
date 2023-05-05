@@ -44,44 +44,37 @@ const runMigration = async () => {
   console.log('Retrieving all V1 events')
   const eventResults = v1Client.listEntities()
 
-  console.log('Validating V1 events')
-  let eventsValidated = 0
+  console.log('Processing V1 events')
+  let processedEvents = 0
   for await (const v1Event of eventResults) {
-    if (eventsValidated % 5000 === 0) {
-      console.log(`Validated ${eventsValidated} events`)
+    if (processedEvents % 5000 === 0) {
+      console.log(`Processed ${processedEvents} events`)
     }
     const sanitizedV1Event = sanitizeV1Event(v1Event)
     const v2Event = await createV2Event(sanitizedV1Event, v1Client)
     if (validateEvent(v2Event)) {
-      validEvents.push(v2Event)
+      if (textSummary) {
+        validEvents.push(v2Event)
+      }
       totalValidEvents++
+      const eventType = getEventType(v2Event.type)
+      const saved = await saveEvent(v2Event, eventType, batchClient, paymentClient, warningClient)
+      if (saved) {
+        if (textSummary) {
+          migratedEvents.push(v2Event)
+        }
+        totalMigratedEvents++
+      } else {
+        if (textSummary) {
+          existingEvents.push(v2Event)
+        }
+        totalExistingEvents++
+      }
     } else {
       if (textSummary) {
         invalidEvents.push(v2Event)
       }
       totalInvalidEvents++
-    }
-    eventsValidated++
-  }
-
-  console.log('Migrating valid V1 events to V2 stores')
-  let processedEvents = 0
-  for (const event of validEvents) {
-    if (processedEvents % 5000 === 0) {
-      console.log(`Migrated ${processedEvents} events`)
-    }
-    const eventType = getEventType(event.type)
-    const saved = await saveEvent(event, eventType, batchClient, paymentClient, warningClient)
-    if (saved) {
-      if (textSummary) {
-        migratedEvents.push(event)
-      }
-      totalMigratedEvents++
-    } else {
-      if (textSummary) {
-        existingEvents.push(event)
-      }
-      totalExistingEvents++
     }
     processedEvents++
   }
