@@ -1,5 +1,4 @@
-const { TableClient, odata } = require('@azure/data-tables')
-const { storageConnectionString, v1Table } = require('../config')
+const { odata } = require('@azure/data-tables')
 const { PAYMENT_DAX_REJECTED, PAYMENT_ACKNOWLEDGED, PAYMENT_SETTLED } = require('../constants/v2-events')
 const { sanitizeV1Event } = require('./sanitize-v1-event')
 

@@ -19,6 +19,7 @@ const createIfNotExists = async (client, entity, eventType) => {
     for await (const v2Event of client.listEntities()) {
       v2Events[eventType].push(v2Event)
     }
+    console.log(`Captured ${v2Events[eventType].length} existing ${eventType} events`)
     existingEventsCaptured[eventType] = true
   }
 
@@ -34,11 +35,11 @@ const createIfNotExists = async (client, entity, eventType) => {
   if (hasExistingEvent) {
     return false
   }
+
   if (completeMigration) {
     try {
       await client.createEntity(entity)
     } catch {
-      console.log('Unable to save event', entity)
       return false
     }
   }
