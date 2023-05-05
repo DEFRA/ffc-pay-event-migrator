@@ -1,0 +1,11 @@
+{{- include "ffc-helm-library.cron-job" (list . "ffc-pay-event-migrator.cron-job") -}}
+{{- define "ffc-pay-event-migrator.cron-job" -}}
+spec:
+  successfulJobsHistoryLimit: {{ .Values.cronJob.successfulJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - {{ include "ffc-helm-library.container" (list . "ffc-pay-event-migrator.container") | nindent 12 }}
+{{- end -}}
