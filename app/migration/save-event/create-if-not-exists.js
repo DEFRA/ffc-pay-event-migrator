@@ -26,9 +26,9 @@ const createIfNotExists = async (client, entity, eventType) => {
   if (eventType === WARNING_EVENT) {
     hasExistingEvent = v2Events[eventType].some(v2Event => v2Event.partitionKey === entity.partitionKey && v2Event.type === entity.type && v2Event.time.toString() === entity.time.toString())
   } else if (eventType === BATCH_EVENT) {
-    hasExistingEvent = v2Events[eventType].some(v2Event => v2Event.partitionKey === entity.partitionKey && v2Event.data === entity.data)
+    hasExistingEvent = v2Events[eventType].some(v2Event => v2Event.partitionKey === entity.partitionKey && v2Event.type === entity.type && v2Event.data === entity.data)
   } else {
-    hasExistingEvent = v2Events[eventType].some(v2Event => v2Event.partitionKey === entity.partitionKey && v2Event.rowKey.startsWith(removeTimeFromRowKey(entity.rowKey)) && v2Event.type === entity.type && v2Event.data === entity.data)
+    hasExistingEvent = v2Events[eventType].some(v2Event => v2Event.partitionKey === entity.partitionKey && removeTimeFromRowKey(v2Event.rowKey) === removeTimeFromRowKey(entity.rowKey) && v2Event.type === entity.type && v2Event.data === entity.data)
   }
 
   if (hasExistingEvent) {
