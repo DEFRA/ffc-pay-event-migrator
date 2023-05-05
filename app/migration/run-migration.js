@@ -15,11 +15,13 @@ let paymentClient
 let warningClient
 
 if (useConnectionString) {
+  console.log('Using connection string')
   v1Client = TableClient.fromConnectionString(storageConnectionString, v1Table, { allowInsecureConnection: true })
   batchClient = TableClient.fromConnectionString(storageConnectionString, batchTable, { allowInsecureConnection: true })
   paymentClient = TableClient.fromConnectionString(storageConnectionString, paymentTable, { allowInsecureConnection: true })
   warningClient = TableClient.fromConnectionString(storageConnectionString, warningTable, { allowInsecureConnection: true })
 } else {
+  console.log('Using managed identity')
   v1Client = new TableClient(`https://${storageName}.table.core.windows.net`, v1Table, new DefaultAzureCredential())
   paymentClient = new TableClient(`https://${storageName}.table.core.windows.net`, paymentTable, new DefaultAzureCredential())
   warningClient = new TableClient(`https://${storageName}.table.core.windows.net`, warningTable, new DefaultAzureCredential())
