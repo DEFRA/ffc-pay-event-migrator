@@ -45,7 +45,11 @@ const runMigration = async () => {
   const eventResults = v1Client.listEntities()
 
   console.log('Validating V1 events')
+  let eventsProcessed = 0
   for await (const v1Event of eventResults) {
+    if (eventsProcessed % 1000 === 0) {
+      console.log(`Processed ${eventsProcessed} events`)
+    }
     const sanitizedV1Event = sanitizeV1Event(v1Event)
     const v2Event = await createV2Event(sanitizedV1Event, v1Client)
     if (validateEvent(v2Event)) {
@@ -57,6 +61,7 @@ const runMigration = async () => {
       }
       totalInvalidEvents++
     }
+    eventsProcessed++
   }
 
   console.log('Migrating valid V1 events to V2 stores')
