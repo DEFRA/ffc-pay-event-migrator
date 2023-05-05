@@ -18,7 +18,12 @@ const createIfNotExists = async (client, entity) => {
     return false
   }
   if (completeMigration) {
-    await client.createEntity(entity)
+    try {
+      await client.createEntity(entity)
+    } catch {
+      console.log('Unable to save event', entity)
+      return false
+    }
   }
   return true
 }
